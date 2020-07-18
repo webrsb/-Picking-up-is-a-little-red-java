@@ -1,0 +1,149 @@
+/**
+ * 2020/04/01 p16
+ * 改善 Search
+ */
+
+@startuml
+class Rank {
+  + {static} isSizeAvalible(): boolean
+  + getSize(): int
+}
+
+enum Suit {
+  DIAMOND
+  SPADE
+  HEART
+  CLUB
+}
+
+class Card {
+}
+Card o--> Rank
+Card o-> Suit
+
+class CardPack {
+  - cards: List<Card>
+  + add(Card): boolean
+  + getByIndex(int): Card
+  + removeByIndex(int): boolean
+  + getSize(): int
+}
+CardPack o-up-> Card
+
+class Poker {
+  + shuffling(): void
+ {static} + getInsWithStander(): Poker
+}
+CardPack<|--Poker
+
+interface DrawAble {
+  + draw(): Card
+}
+DrawAble<|.Poker
+
+class Pool {
+}
+CardPack<|--Pool
+DrawAble<|..Pool
+
+
+class Player {
+}
+Player o--> Hand
+Player o--> Paired
+
+class scoreHelper {
+  + getTotalScore(): int
+  + getScore(Card): int
+}
+scoreHelper o--> Paired
+
+class Paired {
+  - originPairedCards: List<Card>
+  - targetPairedCards: List<Card>
+  + pair(PairCache, PairCache): boolean
+ {static} + isPairable(Card, Card): boolean
+}
+Paired o--> PairCache
+
+class PairCache {
+  - index: int
+  + getCard(): Card
+  + removeCard(): Card
+}
+PairCache o-> CardPack
+
+class Ocean {
+  + putCard(PairCache): void
+}
+CardPack<|--Ocean
+
+class Hand {
+}
+CardPack<|--Hand
+
+@enduml
+
+
+需求
+一副撲克有四種花色，每種花色有13個數字。玩家擁有手牌、公共區有牌堆可讓玩家抽、可配對區為海底牌
+
+功能
+遊戲開始前，從一副亂序的撲克依序產生
+  1. 每個玩家的手牌
+  2. 海底牌
+  3. 牌堆
+
+實作0 產生亂數牌
+  1. 提供一個標準牌，放入洗牌函式中
+  2. 洗牌函式將其進行順序亂數
+  3. 得到一個沒有順序的亂數牌堆
+
+實作1 產生手牌
+  1. 將亂數牌放入發牌函數中
+  2. 從中抽取 n 張牌
+  3. 玩家得到一份手牌
+
+實作2 產生海底牌
+  1. 將剩餘的亂數牌放入發牌函數
+  2. 從中抽取 4 張牌
+  3. 海底牌獲得四張牌
+
+實作3 產生牌堆
+  1. 將剩餘的亂數牌當作牌堆
+
+需求
+遊戲開始，玩家從手牌挑一張和海底牌的其中一張進行配對，若配對成功則將其放入配對完成的牌組中
+
+功能
+  1. 玩家檢視目前有哪些手牌
+  2. 玩家檢視目前有哪些海底牌
+  3. 玩家決定將一張手牌與一張海底牌準備配對
+  3.1 玩家沒有牌可配，從牌庫抽一張準備配對
+  4. 配對完成後，將牌拿出放入配對牌組
+  4.1 沒有配對的牌，則從牌庫再抽一張
+
+實作1 檢視手牌
+  1. 玩家想要看自己的牌有哪些
+  2. 檢視工具遍例所有的手牌
+  3. 玩家得到自己的手牌清單
+
+實作2 檢視海底牌
+  1. 玩家想要看海底牌有哪些
+  2. 檢視工具遍例所有的海底牌
+  3. 玩家得到海底牌清單
+
+實作3 配對手牌與海底牌
+  1. 玩家想要將所選的手牌與目的的海底牌進行配對
+  2. 配對工具將海底牌和要配對的牌移至暫存區
+  2. 配對工具檢查是否可以進行配對
+  3. 一旦配對成功，即將手牌與海底牌都取出放入配對區
+  4. 
+
+功能
+  1. 玩家想知道已配對的牌有多少分
+實作1
+  1. 玩家提供自己已配對的清單給分數計算工具
+  2. 分數計算工具檢視所有的卡片
+  3. 根據分數規則計算分數
+  4. 玩家得到自己的總分
