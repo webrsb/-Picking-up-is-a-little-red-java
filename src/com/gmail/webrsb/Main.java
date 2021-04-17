@@ -6,7 +6,6 @@ import com.gmail.webrsb.cardpack.CardPack;
 import com.gmail.webrsb.cardpack.PairCache;
 import com.gmail.webrsb.cardpack.ScoreHelper;
 import com.gmail.webrsb.cardpack.child.*;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Iterator;
